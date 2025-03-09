@@ -36,8 +36,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.codehaus.groovy:groovy-all:3.0.18'
-	testImplementation 'org.spockframework:spock-core:2.1-groovy-3.0'
-	testImplementation 'org.spockframework:spock-spring:2.0-M3-groovy-3.0'
+	testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
+	testImplementation 'org.spockframework:spock-spring:2.3-groovy-3.0'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'junit'
 	}

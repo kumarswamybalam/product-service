@@ -16,16 +16,4 @@ class BaseSpecification  extends Specification {
     static String readFile(String path){
         return FileUtils.readFileToString(new File(path), Charset.defaultCharset())
     }
-
-    def 'sample' () {
-        given:
-        String x = "hello"
-
-        when:
-        String y = x.reverse()
-
-        then:
-        y == "olleh"
-    }
-
 }

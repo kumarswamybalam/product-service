@@ -7,12 +7,14 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 public class BaseController {
+
     @Value("${spring.application.name}")
     private String appName;
 
@@ -22,9 +24,11 @@ public class BaseController {
     @Value("${spring.datasource.url}")
     private String dataSourceUrl;
 
+    private final Clock clock;
     private final DataSource dataSource;
 
-    public BaseController(DataSource dataSource) {
+    public BaseController(DataSource dataSource, Clock clock) {
+        this.clock = clock;
         this.dataSource = dataSource;
     }
 
@@ -33,7 +37,7 @@ public class BaseController {
         Map<String, String> response = new HashMap<>();
         response.put("appName", appName);
         response.put("version", appVersion);
-        response.put("currentTime", LocalDateTime.now().toString());
+        response.put("currentTime", LocalDateTime.now(clock).toString());
         return response;
     }
 
