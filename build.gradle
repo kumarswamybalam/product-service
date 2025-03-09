@@ -1,0 +1,85 @@
+plugins {
+	id 'java'
+	id 'groovy'
+	id 'jacoco'
+	id 'org.springframework.boot' version '3.2.1'
+	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.balam.service'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 17
+targetCompatibility = 17
+
+tasks.withType(JavaCompile) {
+	options.release = 17
+}
+
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.kafka:spring-kafka'
+	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'org.liquibase:liquibase-core:4.26.0'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.codehaus.groovy:groovy-all:3.0.18'
+	testImplementation 'org.spockframework:spock-core:2.1-groovy-3.0'
+	testImplementation 'org.spockframework:spock-spring:2.0-M3-groovy-3.0'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'junit'
+	}
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'commons-io:commons-io:2.14.0'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'com.squareup.okhttp3:okhttp:4.9.2'
+	testImplementation 'com.squareup.okhttp3:mockwebserver:4.8.1'
+}
+
+bootRun {
+	jvmArgs = [
+			"-Dapp.config=/temp/${rootProject.name}",
+			"-Dlogs.dir=/temp/${rootProject.name}",
+			"-Denvironment=${System.getProperty('environment', 'local')}",
+			"-Dfile.encoding=UTF-8",
+			"-Dshared.logging.appender.name=console"
+	]
+}
+
+test {
+	useJUnitPlatform{
+		beforeTest { desc ->
+			logger.quiet "Executing \"${desc.name}\" [${desc.className}] ..."
+		}
+	}
+	jvmArgs = [
+			"-Dapp.config=/temp/${rootProject.name}",
+			"-Dlogs.dir=/temp/${rootProject.name}",
+			"-Denvironment=${System.getProperty('environment', 'local')}",
+			"-Dfile.encoding=UTF-8",
+			"-Dshared.logging.appender.name=console"
+	]
+}
+
+test {
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	reports.html.outputLocation = file("${layout.buildDirectory.asFile.get()}/${System.properties.enviorment ?: 'local'}/reports/jacoco")
+	dependsOn test
+}
