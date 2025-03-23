@@ -1,4 +1,6 @@
 plugins {
+	id 'war'
+	id 'idea'
 	id 'java'
 	id 'groovy'
 	id 'jacoco'
@@ -14,7 +16,6 @@ targetCompatibility = 17
 tasks.withType(JavaCompile) {
 	options.release = 17
 }
-
 
 configurations {
 	compileOnly {
@@ -50,6 +51,12 @@ dependencies {
 	testImplementation 'com.squareup.okhttp3:mockwebserver:4.8.1'
 }
 
+tasks.withType(Test).configureEach {Task task ->
+	task.configure {
+		useJUnitPlatform()
+	}
+}
+
 bootRun {
 	jvmArgs = [
 			"-Dapp.config=/temp/${rootProject.name}",
@@ -58,6 +65,17 @@ bootRun {
 			"-Dfile.encoding=UTF-8",
 			"-Dshared.logging.appender.name=console"
 	]
+}
+
+war {
+	enabled = true
+	entryCompression = ZipEntryCompression.STORED
+	archiveClassifier = ''
+}
+
+bootWar {
+	enabled = true
+	archiveClassifier = 'boot'
 }
 
 test {
