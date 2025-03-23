@@ -3,14 +3,16 @@ package com.balam.service.product
 import org.apache.commons.io.FileUtils
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
 import java.nio.charset.Charset
 
+@ContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(["local"])
 @TestPropertySource("classpath:unit-test.properties")
+@ActiveProfiles("local")
 class BaseSpecification  extends Specification {
 
     static String readFile(String path){

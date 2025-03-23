@@ -36,7 +36,9 @@ public class BaseController {
     public Map<String, String> heartbeat() {
         Map<String, String> response = new HashMap<>();
         response.put("appName", appName);
+        response.put("status", "running");
         response.put("version", appVersion);
+        response.put("environment", System.getProperty("environment"));
         response.put("currentTime", LocalDateTime.now(clock).toString());
         return response;
     }

@@ -2,51 +2,30 @@ package com.balam.service.product
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
-import spock.lang.Specification
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource("classpath:unit-test.properties")
-@ActiveProfiles("local")
-class ProductServiceApplicationSpec extends Specification {
+class ProductServiceApplicationSpec extends BaseSpecification {
 
     @Value('${spring.application.name}')
     private String appName
 
+    @Value('${spring.datasource.url}')
+    private String dbUrl
+
     @Autowired
     private TestRestTemplate restTemplate
 
-    @Autowired
-    private ApplicationContext context
-
-    def "verify Spring context and beans are loaded"() {
-        expect:
-        context != null
-        restTemplate != null
-    }
-
-    def "debug context beans"() {
-        when:
-        def beanNames = context != null ? context.getBeanDefinitionNames() : []
-        println(beanNames.join("\n"))
-
-        then:
-        beanNames.size() > 0 // Ensure at least some beans are loaded
-    }
-
     def 'has heartbeat' () {
         when:
-        ResponseEntity<Map<String, String>> response = restTemplate.getForEntity("/heartbeat", Map)
+        ResponseEntity<Map<String, String>> response = restTemplate.getForEntity("/heartbeat", Map) as ResponseEntity<Map<String, String>>
 
         then:
         response.statusCode == HttpStatus.OK
+        response.body.get('appName') == appName
+        response.body.get('status') == 'running'
+        response.body.get('environment') == 'local'
     }
 
     def "should check database health from /health-check"() {
@@ -55,5 +34,7 @@ class ProductServiceApplicationSpec extends Specification {
 
         then:
         response.statusCode == HttpStatus.OK
+        response.body.get('database').getAt('provided') == dbUrl
+        response.body.get('database').getAt('status') == 'success'
     }
 }
